@@ -41,11 +41,12 @@ class source():
         self._activePolls = []  # Hold tasks for active polls
 
         # Create queues and lock.  Must be created as a callback from new thread.
-        def initAsyncVariables():
+        async def initAsyncVariables():
             self._dataQueue = asyncio.Queue()  # Queue to pass data back to requesting object
             self._cmdQueue = asyncio.Queue()  # Queue to submit commands to be sent to server
             self._connectingLock = asyncio.Lock()  # Lock to prevent asynchronous connection attempts
-        self._loop.call_soon_threadsafe(initAsyncVariables)
+        future = asyncio.run_coroutine_threadsafe(initAsyncVariables(), self._loop)
+        future.result(1)
 
         # Start command loop for this source
         self._cmdLoopTask = self._loop.create_task(self._commandLoop())
@@ -87,7 +88,10 @@ class source():
         if self._shutdownFlag is True:
             return
         self._shutdownFlag = True
-        self._logger.warn("Shutting down source")
+        self._logger.warning("Shutting down source")
+
+        # Close any open streams
+        await self._close()
 
         # Cancel the command loop
         self._cmdLoopTask.cancel()
@@ -96,13 +100,6 @@ class source():
         if hasattr(self, '_activePolls'):
             for p in self._activePolls:
                 p.cancel()
-
-        # Close any open streams
-        await self._close()
-
-        # If using local threadloop shut it down
-        if self._tloopLocal:
-            self.tloop.shutdown()
 
 
     async def _commandLoop(self):
@@ -126,6 +123,8 @@ class source():
 
     async def _poll(self, handler=None, frequency=DEFAULT_FREQUENCY, repeat=None, wait=None):
         assert handler is not None, 'Must provide a handler to poll with'
+        assert type(frequency) in (float, int), 'Frequency must be a valid number'
+        assert frequency >= 0.1, 'Minimum frequency is 1/10 of a sec'
         ''' Add poll to connection '''
         # If using default timeout, added a 10% buffer
         # This prevents premature exit if the handler is also using
@@ -150,13 +149,15 @@ class source():
         async def _pollItem():
             ''' A coroutine to issue execution requests for a poll into the command queue '''
             number = repeat
+
             while not self._shutdownFlag:
                 await self._cmdQueue.put(_pollExecution())
-                if repeat is not None:
-                    number -= 1
+                if number is not None:
+                    number = number - 1
                     if number <= 0:
                         break
-                await asyncio.sleep(frequency)
+                if frequency is not None:
+                    await asyncio.sleep(frequency)
 
         # Add new poll to loop
         self._activePolls.append(asyncio.create_task(_pollItem()))
@@ -183,7 +184,8 @@ class source():
 
     def shutdown(self):
         self.checkAlive()
-        asyncio.run_coroutine_threadsafe(self._shutdown(), self._loop)
+        fut = asyncio.run_coroutine_threadsafe(self._shutdown(), self._loop)
+        fut.result(5)
 
     async def _get(self):
         result = await self._dataQueue.get()
@@ -273,17 +275,18 @@ class tcp(source):
             async with self._connectingLock:
                 try:
                     self._reader, self._writer = await asyncio.wait_for(
-                        asyncio.open_connection(self._host, self._port, loop=self._loop),
-                        timeout=self._connectionTimeout,
-                        loop=self._loop)
+                        asyncio.open_connection(self._host, self._port),
+                        timeout=self._connectionTimeout)
 
                     if self._helloHandler:
-                        self._helloData = await asyncio.wait_for(self._helloHandler(), timeout=self._connectionTimeout, loop=self._loop)
+                        self._helloData = await asyncio.wait_for(self._helloHandler(), timeout=self._connectionTimeout)
 
                         if self._helloData.status == status.SUCCESS:
                             self._connected = True
                         else:
                             self._logger.error(f"Received invalid response on initial connection to {self._host}:{self._port}.  Response was {self._helloData}")
+                    else:
+                        self._connected = True
 
                 except ConnectionRefusedError as ex:
                     raise ConnectionException(f"Connection refused to {self._host}:{self._port}: {ex}")
@@ -312,11 +315,11 @@ class tcp(source):
         await self._writer.drain()
 
     async def readline(self, wait=None):
-        line = await asyncio.wait_for(self._reader.readline(), timeout=wait, loop=self._loop)
+        line = await asyncio.wait_for(self._reader.readline(), timeout=wait)
         return line.decode()
 
     async def readuntil(self, separator='\n', wait=None):
-        line = await asyncio.wait_for(self._reader.readuntil(separator=separator.encode()), timeout=wait, loop=self._loop)
+        line = await asyncio.wait_for(self._reader.readuntil(separator=separator.encode()), timeout=wait)
         return line.decode()
 
 
@@ -333,21 +336,54 @@ class socketIO(source):
         from socketio import AsyncClient, exceptions
 
         self._sioExceptions = exceptions
-
         self._url = url
 
         # Initialize handler and set default callbacks
-        self._sio = AsyncClient()  # SIO client handle
+        #self._sio = AsyncClient()  # SIO client handle
 
         # Register message handlers
+        #self._default_register()
+        self._sio = AsyncClient()
         self._default_register()
-
         super().__init__(connectionTimeout=connectionTimeout, pollTimeout=pollTimeout, persistent=persistent, loop=loop)
+
+        # Initialize variables within thread
+        #async def initAsyncVariables():
+
+        #future = asyncio.run_coroutine_threadsafe(initAsyncVariables(), self._loop)
+        #future.result(1)
 
     def _default_register(self):
         self._sio.on('connect', self._connect)
         self._sio.on('disconnect', self._disconnect)
         self._sio.on('connect_error', self._connectError)
+
+
+    '''
+    async def _shutdown(self):
+        # If already shutdown, there is no action to take so return
+        if self._shutdownFlag is True:
+            return
+
+        self._shutdownFlag = True
+        self._logger.warn("Shutting down source")
+
+        # Cancel the command loop
+        self._cmdLoopTask.cancel()
+
+        # Cancel any active polls
+        if hasattr(self, '_activePolls'):
+            for p in self._activePolls:
+                p.cancel()
+
+        # Close any open streams
+        await self._close()
+
+        # If using local threadloop shut it down
+        #if self._tloopLocal:
+        #    self.tloop.shutdown()
+
+    '''
 
     # Default Handlers
     async def _connect(self):
@@ -371,6 +407,7 @@ class socketIO(source):
                     await self._sio.connect(self._url)
                     self._connected = True
                 except self._sioExceptions.ConnectionError as ex:
+                    self._logger.error(traceback.format_exc())
                     raise ConnectionException(f"Connection refused to {self._url}: {ex}")
                 except TimeoutError as ex:
                     raise ConnectionException(f'Timed out during connection attempt to {self._url}: {ex}')
@@ -389,8 +426,7 @@ class socketIO(source):
             await self._sio.emit(event, data=data, namespace=namespace, callback=callback)
 
     # User callable methods
-    def add(self, event, data=None, namespace=None, callback=None, frequency=None, repeat=None, wait=None):
-        self.poll()
+    def add(self, event, data=None, namespace=None, callback=None, frequency=DEFAULT_FREQUENCY, repeat=None, wait=None):
         h = lambda: self._emit(event, data=data, namespace=namespace, callback=callback)
         self.poll(handler=h, frequency=frequency, repeat=repeat, wait=wait)
 
@@ -422,7 +458,7 @@ class database(source):
         `src = database('sqlite+aiosqlite:///test.db')`
     '''
 
-    def __init__(self, uri, query=None, name=None, frequency=None, repeat=None, wait=None, loop=None):
+    def __init__(self, uri, query=None, name=None, frequency=DEFAULT_FREQUENCY, repeat=None, wait=None, loop=None):
 
         # Local import
         import sqlalchemy as db
@@ -439,7 +475,7 @@ class database(source):
         if query is not None:
             self.add(query, name=name, frequency=frequency, repeat=repeat, wait=wait)
 
-    def add(self, query, name=None, frequency=None, repeat=None, wait=None):
+    def add(self, query, name=None, frequency=DEFAULT_FREQUENCY, repeat=None, wait=None):
         '''
         Add query retrieve data from database
 
@@ -483,7 +519,7 @@ class database(source):
 
 
 class system(source):
-    def __init__(self, name=None, frequency=None, repeat=None, wait=None, loop=None):
+    def __init__(self, name=None, frequency=DEFAULT_FREQUENCY, repeat=None, wait=None, loop=None):
         super().__init__(loop=loop)
 
         # Local import
@@ -543,7 +579,7 @@ class rss(source):
     Source to interact with rss servers
     '''
 
-    def __init__(self, url=None, name=None, frequency=None, repeat=None, wait=None, loop=None):
+    def __init__(self, url=None, name=None, frequency=DEFAULT_FREQUENCY, repeat=None, wait=None, loop=None):
         super().__init__(loop=loop)
         self._url = url
 
@@ -570,6 +606,6 @@ class rss(source):
             retv.append(reti)
         await self.put(retv, name)
 
-    def add(self, url, name=None, frequency=None, repeat=None, wait=None):
-        h = lambda: self._handler(url)
-        self.poll(handler=h, name=name, frequency=frequency, repeat=repeat, wait=wait)
+    def add(self, url, name=None, frequency=DEFAULT_FREQUENCY, repeat=None, wait=None):
+        h = lambda: self._handler(url, name=name)
+        self.poll(handler=h, frequency=frequency, repeat=repeat, wait=wait)

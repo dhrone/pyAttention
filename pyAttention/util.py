@@ -51,13 +51,3 @@ class threadloop(object):
         self.loop = asyncio.new_event_loop()
         self._thread = threading.Thread(target=run_loop, args=(self.loop,), daemon=True)
         self._thread.start()
-
-    async def _shutdown(self):
-        if self._thread is not None and not self._thread.is_alive():
-            raise RuntimeError('ThreadLoop has already shutdown')
-
-        if self._thread is not None:
-            self.loop.stop()
-
-    def shutdown(self):
-        asyncio.run_coroutine_threadsafe(self._shutdown(), self.loop)

@@ -1,6 +1,7 @@
 import asyncio
 
-from pyAttention.source import message, status, tcp, socketIO
+from pyAttention.source import tcp, socketIO
+from pyAttention.util import message, status
 from pyAttention import parser
 from pyAttention.exception import MessageException, MessageTimeout, ParserException
 
