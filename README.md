@@ -1,6 +1,8 @@
 # pyAttention
 A library to monitor information sources
 
+[![codecov](https://codecov.io/gh/dhrone/pyAttention/branch/master/graph/badge.svg?token=ZCAT8XRG4W)](https://codecov.io/gh/dhrone/pyAttention)
+
 ## Key Features
 
 * Retrieves data from TCP servers, socketIO services, RSS feeds, and SQL databases
