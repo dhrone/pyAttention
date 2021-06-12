@@ -1,13 +1,13 @@
 # Source.py
 
 import asyncio
+import concurrent.futures
 import logging
 import time
 import traceback
-import concurrent.futures
 
-from pyattention.util import status, threadloop
 from pyattention.exception import ConnectionException
+from pyattention.util import status, threadloop
 
 DEFAULT_FREQUENCY = (
     60  # If not specified all source polling will occur once per minute
@@ -706,8 +706,8 @@ class rss(source):
         self._url = url
 
         # Local Import
-        import httpx
         import bs4
+        import httpx
 
         self._httpx = httpx
         self._bs4 = bs4

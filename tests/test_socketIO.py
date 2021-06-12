@@ -1,8 +1,10 @@
+import time
+from signal import SIGINT
+from subprocess import Popen
+
 import pytest
 import requests
-import time
-from subprocess import Popen
-from signal import SIGINT
+
 from pyattention.source import socketIO
 
 

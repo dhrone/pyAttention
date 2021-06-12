@@ -1,6 +1,5 @@
-from aiohttp import web
 import socketio
-
+from aiohttp import web
 
 sio = socketio.AsyncServer()
 app = web.Application()

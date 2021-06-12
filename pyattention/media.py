@@ -1,9 +1,9 @@
 import asyncio
 
-from pyattention.source import tcp, socketIO
-from pyattention.util import message, status
 from pyattention import parser
 from pyattention.exception import MessageException, MessageTimeout
+from pyattention.source import socketIO, tcp
+from pyattention.util import message, status
 
 
 class mpd(tcp):

@@ -1,6 +1,7 @@
 import pytest
-from pyattention.parser import kvp, listOfKvp
+
 from pyattention.exception import ParserException
+from pyattention.parser import kvp, listOfKvp
 
 
 def test_kvp():

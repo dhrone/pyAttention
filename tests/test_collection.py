@@ -1,5 +1,5 @@
-from pyattention.source import system
 from pyattention.collection import collection
+from pyattention.source import system
 
 
 def test_collection():

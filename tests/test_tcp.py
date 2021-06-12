@@ -1,10 +1,12 @@
+import time
+from signal import SIGINT
+from subprocess import Popen
+
 import pytest
 import requests
-import time
-from subprocess import Popen
-from signal import SIGINT
-from pyattention.source import tcp
+
 from pyattention import parser
+from pyattention.source import tcp
 
 port = 20204
 
