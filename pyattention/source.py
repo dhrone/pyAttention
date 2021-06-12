@@ -98,7 +98,7 @@ class source:
         pass
 
     async def _shutdown(self):
-        """ Safely shutdown the source """
+        """Safely shutdown the source"""
         # If already shutdown, there is no action to take so return
         if self._shutdownFlag is True:
             return
@@ -154,7 +154,7 @@ class source:
         wait = wait or self._pollTimeout
 
         async def _pollExecution():
-            """ A coroutine to process one interaction with the source """
+            """A coroutine to process one interaction with the source"""
             connected = await self._connect()
 
             if connected:
@@ -169,7 +169,7 @@ class source:
                         self._close()
 
         async def _pollItem():
-            """ A coroutine to issue execution requests for a poll into the command queue """
+            """A coroutine to issue execution requests for a poll into the command queue"""
             number = repeat
 
             while not self._shutdownFlag:
@@ -641,7 +641,7 @@ class system(source):
         self.poll(handler=h, frequency=frequency, repeat=repeat, wait=wait)
 
     async def _getTemp(self):
-        """ Get current system temperatures """
+        """Get current system temperatures"""
         if not hasattr(self._psutil, "sensors_temperatures"):
             return
         temps = self._psutil.sensors_temperatures()

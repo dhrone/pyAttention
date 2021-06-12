@@ -62,10 +62,11 @@ flake8 = "^3.9.0"
 coverage = "^5.5"
 pytest-cov = "^2.11.1"
 isort = "^5.8.0"
-black = "^20.8b1"
 darglint = "^1.7.0"
 rstcheck = "^3.3.1"
 ipython = "^7.24.1"
+codecov = "^2.1.11"
+black = "^21.6b0"
 
 [tool.pytest.ini_options]
 minversion = 6.0
