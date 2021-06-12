@@ -1,6 +1,7 @@
 import asyncio
 from pyattention.source import source
 
+
 class collection(source):
     def __init__(self, loop=None):
         self._srcTaskList = {}
@@ -31,6 +32,9 @@ class collection(source):
     async def _register(self, name, source):
         '''
         Register a new source with the collection
+
+        :param name: The name of the source
+        :param source: The source to register
         '''
         self._last[name] = {}
 

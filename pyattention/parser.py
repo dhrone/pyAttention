@@ -11,6 +11,7 @@ If they encounter a message that contains input they cannot parse, they must thr
 a ParserException exception.
 '''
 
+
 def kvp(msg, separator=':'):
     if type(msg) is str:
         msg = msg.strip().split('\n')
@@ -18,8 +19,8 @@ def kvp(msg, separator=':'):
     lnum = 0
     d = {}
     try:
-        for l in msg:
-            k, v = l.split(separator, 1)
+        for line in msg:
+            k, v = line.split(separator, 1)
             d[k.strip()] = v.strip()
             lnum += 1
         if len(d) == 0:
@@ -36,8 +37,8 @@ def listOfKvp(msg, separator=':', startingKey=None):
     d = {}
     lnum = 0
     try:
-        for l in msg:
-            k, v = l.split(separator, 1)
+        for line in msg:
+            k, v = line.split(separator, 1)
             if k.strip() == startingKey:
                 if d:
                     ls.append(d)

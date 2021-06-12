@@ -3,14 +3,14 @@
 import asyncio
 import logging
 import time
-import threading
 import traceback
 import concurrent.futures
 
-from pyattention.util import status, message, threadloop
-from pyattention.exception import MessageTimeout, MessageException, PollingException, ConnectionException, ParserException
+from pyattention.util import status, threadloop
+from pyattention.exception import ConnectionException
 
 DEFAULT_FREQUENCY = 60  # If not specified all source polling will occur once per minute
+
 
 class source():
 
@@ -51,7 +51,6 @@ class source():
         # Start command loop for this source
         self._cmdLoopTask = self._loop.create_task(self._commandLoop())
 
-
     async def _connect(self):
         '''
         Connect to the data source (if needed)
@@ -63,7 +62,7 @@ class source():
 
         Must set self._connected if connection attempt is successful.
 
-        :retval: A boolean indicating whether the connection attempt succeeded or not
+        :returns: A boolean indicating whether the connection attempt succeeded or not
         :rtype: bool
         '''
         if self._shutdownFlag:
@@ -71,7 +70,6 @@ class source():
         if not self._connected:
             self._connected = True
         return self._connected
-
 
     async def _close(self):
         '''
@@ -101,12 +99,11 @@ class source():
             for p in self._activePolls:
                 p.cancel()
 
-
     async def _commandLoop(self):
         while not self._shutdownFlag:
             try:
-                pollCoro = await asyncio.wait_for(self._cmdQueue.get(), timeout=
-                self._cmdQueueTimeout)
+                pollCoro = await asyncio.wait_for(self._cmdQueue.get(),
+                    timeout=self._cmdQueueTimeout)
                 self._cmdQueue.task_done()
                 await pollCoro
             except asyncio.TimeoutError:
@@ -163,15 +160,29 @@ class source():
         self._activePolls.append(asyncio.create_task(_pollItem()))
 
     async def put(self, data, key=None):
-        ''' Put timestamped data into dataQueue '''
+        '''
+        Put timestamped data into dataQueue.
+
+        :param data: value to place into key
+        :param key: key for the value
+
+        ..note:
+            If key is none and the data is a dictionary it is placed unchanged
+            into the queue.
+            If key is none and the data is not a dictionary, it is placed into
+            a dict using the key value 'data'
+            e.g. {'data': data}
+            If key contains a value, the data is placed into a dict
+            e.g. {key}: data
+        '''
 
         # Place data in dictionary with `key` if provided
         if key is not None:
-            data = { key: data }
+            data = {key: data}
 
         # Place data within dictionary if needed
         if type(data) is not dict:
-            data = { 'data': data }
+            data = {'data': data}
 
         # Add timestamp
         data['__updated__'] = time.time()
@@ -198,12 +209,12 @@ class source():
             try:
                 self._dataQueue.get_nowait()
                 self._dataQueue.task_done()
-            except QueueEmpty:
+            except asyncio.QueueEmpty:
                 break
 
     def get(self, wait=1):
         self.checkAlive()
-        future =  asyncio.run_coroutine_threadsafe(self._get(), self._loop)
+        future = asyncio.run_coroutine_threadsafe(self._get(), self._loop)
         try:
             result = future.result(wait)
         except concurrent.futures.TimeoutError:
@@ -228,15 +239,16 @@ class source():
         Any message received from the handler will be placed in the sources data
         queue.
 
-        If an error occurs during polling, a WARNING level log event will be generated but no attempt will be made to recover from the error.
+        If an error occurs during polling, a WARNING level log event will be
+        generated but no attempt will be made to recover from the error.
 
         :param handler: The function that will interact with the source.  See
             `handler` documentation for more details.
         :type handler: `pyattention.handler`
-        :param frequency: How often handler will be called in seconds.  Setting this
-            to zero will cause the handler to be called continuously.  THis should be
-            avoided unless the handler spends some amount of time itself waiting for
-            a response from the source.
+        :param frequency: How often handler will be called in seconds.  Setting
+            this to zero will cause the handler to be called continuously.  This
+            should be avoided unless the handler spends some amount of time
+            itself waiting for a response from the source.
         :type frequency: float
         :param repeat: The number of times the polling should be conducted.  If
         None, the polling will continue until the source is shut down.
@@ -267,7 +279,10 @@ class tcp(source):
         self._helloData = None  # Dataset produced by `hello` handler (if any)
 
     async def _connect(self):
-        ''' Connect to the data source (if needed) '''
+        '''Connect to the data source (if needed).
+
+        :returns: Connection status as a boolean
+        '''
         if self._shutdownFlag:
             return False
 
@@ -338,66 +353,32 @@ class socketIO(source):
         self._sioExceptions = exceptions
         self._url = url
 
-        # Initialize handler and set default callbacks
-        #self._sio = AsyncClient()  # SIO client handle
-
         # Register message handlers
-        #self._default_register()
         self._sio = AsyncClient()
         self._default_register()
         super().__init__(connectionTimeout=connectionTimeout, pollTimeout=pollTimeout, persistent=persistent, loop=loop)
 
-        # Initialize variables within thread
-        #async def initAsyncVariables():
-
-        #future = asyncio.run_coroutine_threadsafe(initAsyncVariables(), self._loop)
-        #future.result(1)
-
     def _default_register(self):
-        self._sio.on('connect', self._connect)
-        self._sio.on('disconnect', self._disconnect)
-        self._sio.on('connect_error', self._connectError)
-
-
-    '''
-    async def _shutdown(self):
-        # If already shutdown, there is no action to take so return
-        if self._shutdownFlag is True:
-            return
-
-        self._shutdownFlag = True
-        self._logger.warning("Shutting down source")
-
-        # Cancel the command loop
-        self._cmdLoopTask.cancel()
-
-        # Cancel any active polls
-        if hasattr(self, '_activePolls'):
-            for p in self._activePolls:
-                p.cancel()
-
-        # Close any open streams
-        await self._close()
-
-        # If using local threadloop shut it down
-        #if self._tloopLocal:
-        #    self.tloop.shutdown()
-
-    '''
+        self._sio.on('connect', self._hConnect)
+        self._sio.on('disconnect', self._hDisconnect)
+        self._sio.on('connect_error', self._hConnectError)
 
     # Default Handlers
-    async def _connect(self):
+    async def _hConnect(self):
         self._connected = True
 
-    async def _connectError(self, *args):
+    async def _hConnectError(self, *args):
         self._connected = False
 
-    async def _disconnect(self):
+    async def _hDisconnect(self):
         self._connected = False
 
     # Connection managers
     async def _connect(self):
-        ''' Connect to the data source (if needed) '''
+        '''Connect to the data source (if needed).
+
+        :returns: connection status as a boolean
+        '''
         if self._shutdownFlag:
             return False
 
@@ -412,7 +393,7 @@ class socketIO(source):
                 except TimeoutError as ex:
                     raise ConnectionException(f'Timed out during connection attempt to {self._url}: {ex}')
                 except Exception as ex:
-                    raise ConnectionException(f"Unexpected error connecting to {self._url}: %s")
+                    raise ConnectionException(f"Unexpected error connecting to {self._url}: {ex}")
 
         return self._connected
 
@@ -491,6 +472,11 @@ class database(source):
         :type frequency: float
         :param repeat: How many times the query will be repeated.  If not
             provided the query will be repeated continuously.
+        :param wait: Amount of time request is allowed to take in seconds.  If
+            a source doesn't respond in time, the retrieve will fail with a
+            request timed out message.
+            Set this to None if you are ok blocking until the poll completes.
+        :type wait: float
         '''
         h = lambda: self._handler(query, name)
         self.poll(handler=h, frequency=frequency, repeat=repeat, wait=wait)
@@ -510,7 +496,6 @@ class database(source):
                     retv.append(self._dictFromRow(row))
             await self.put(retv, name)
 
-
     def _dictFromRow(self, row):
         retv = {}
         for k, v in row._mapping.items():
@@ -523,7 +508,8 @@ class system(source):
         super().__init__(loop=loop)
 
         # Local import
-        import netifaces, psutil
+        import netifaces
+        import psutil
         self._netifaces = netifaces
         self._psutil = psutil
 
@@ -543,7 +529,11 @@ class system(source):
         return retv
 
     async def _getDiskStats(self):
-        ''' Get current disk utilization statistics '''
+        '''
+        Get current disk utilization statistics.
+
+        :returns: dictionary of disk statistics of the reporting system
+        '''
         du = self._psutil.disk_usage('/')
         return {
             'total': du[0],
@@ -553,7 +543,11 @@ class system(source):
         }
 
     async def _getIPAddress(self):
-        ''' Get IP address for interface used in default route '''
+        '''
+        Get IP address for interface used in default route.
+
+        :returns: Primary IP address for the system
+        '''
         return self._netifaces.gateways()['default'][self._netifaces.AF_INET][0]
 
     async def _handler(self, name=None):
@@ -584,7 +578,8 @@ class rss(source):
         self._url = url
 
         # Local Import
-        import httpx, bs4
+        import httpx
+        import bs4
         self._httpx = httpx
         self._bs4 = bs4
 

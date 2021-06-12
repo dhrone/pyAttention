@@ -1,12 +1,13 @@
 import asyncio
 import threading
 
+
 class status:
-    SUCCESS  = 200    # OK
-    OVERFLOW = 413    # Payload too large
-    FAILED   = 500    # Internal Server Error
-    TIMEOUT  = 505    # Gateway Timeout
-    NOSTATUS = 0      # Message has no status
+    SUCCESS  = 200    # noqa: E221 OK
+    OVERFLOW = 413    # noqa: E221 Payload too large
+    FAILED   = 500    # noqa: E221 Internal Server Error
+    TIMEOUT  = 505    # noqa: E221 Gateway Timeout
+    NOSTATUS = 0      # noqa: E221 Message has no status
     detail = {
         SUCCESS: 'Success',
         OVERFLOW: 'Overflow',
