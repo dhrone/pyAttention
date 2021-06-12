@@ -1,7 +1,7 @@
 # pyAttention
 A library to monitor information sources
 
-[![codecov](https://codecov.io/gh/dhrone/pyAttention/branch/master/graph/badge.svg?token=ZCAT8XRG4W)](https://codecov.io/gh/dhrone/pyAttention)
+![build](https://github.com/dhrone/pyattention/actions/workflows/test.yml/badge.svg) [![codecov](https://codecov.io/gh/dhrone/pyAttention/branch/master/graph/badge.svg?token=ZCAT8XRG4W)](https://codecov.io/gh/dhrone/pyAttention)
 
 ## Key Features
 
