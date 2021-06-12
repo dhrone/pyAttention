@@ -31,7 +31,6 @@ jobs:
           flake8 .
           black . --check
           isort .
-          rstcheck README.rst
   test:
     needs: linting
     strategy:
