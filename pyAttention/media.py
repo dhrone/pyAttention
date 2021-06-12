@@ -1,9 +1,9 @@
 import asyncio
 
-from pyAttention.source import tcp, socketIO
-from pyAttention.util import message, status
-from pyAttention import parser
-from pyAttention.exception import MessageException, MessageTimeout, ParserException
+from pyattention.source import tcp, socketIO
+from pyattention.util import message, status
+from pyattention import parser
+from pyattention.exception import MessageException, MessageTimeout, ParserException
 
 
 class mpd(tcp):
@@ -61,7 +61,7 @@ class mpd(tcp):
 
 		:param source: The source is passed in to allow handler to transmit and
 			receive data from it.
-		:type source: `pyAttention.source.tcp` instance
+		:type source: `pyattention.source.tcp` instance
 		:param wait: The amount of time that an interaction with the source should
 			take before a TimeoutError is declared
 		:type wait: float

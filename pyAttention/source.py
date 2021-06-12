@@ -7,8 +7,8 @@ import threading
 import traceback
 import concurrent.futures
 
-from pyAttention.util import status, message, threadloop
-from pyAttention.exception import MessageTimeout, MessageException, PollingException, ConnectionException, ParserException
+from pyattention.util import status, message, threadloop
+from pyattention.exception import MessageTimeout, MessageException, PollingException, ConnectionException, ParserException
 
 DEFAULT_FREQUENCY = 60  # If not specified all source polling will occur once per minute
 
@@ -22,7 +22,7 @@ class source():
         self._persistent = persistent
 
         # Initialize logging system
-        self._logger = logging.getLogger("pyAttention")
+        self._logger = logging.getLogger("pyattention")
 
         if loop is None:
             self.tloop = threadloop()
@@ -88,7 +88,7 @@ class source():
         if self._shutdownFlag is True:
             return
         self._shutdownFlag = True
-        self._logger.warning("Shutting down source")
+        self._logger.debug("Shutting down source")
 
         # Close any open streams
         await self._close()
@@ -209,7 +209,7 @@ class source():
         except concurrent.futures.TimeoutError:
             future.cancel()
         except Exception as ex:
-            print (f"Exception: {ex!r}")
+            self._logger.warning(f"Get failed: {ex!r}")
         else:
             return result
 
@@ -232,7 +232,7 @@ class source():
 
         :param handler: The function that will interact with the source.  See
             `handler` documentation for more details.
-        :type handler: `pyAttention.handler`
+        :type handler: `pyattention.handler`
         :param frequency: How often handler will be called in seconds.  Setting this
             to zero will cause the handler to be called continuously.  THis should be
             avoided unless the handler spends some amount of time itself waiting for
@@ -366,7 +366,7 @@ class socketIO(source):
             return
 
         self._shutdownFlag = True
-        self._logger.warn("Shutting down source")
+        self._logger.warning("Shutting down source")
 
         # Cancel the command loop
         self._cmdLoopTask.cancel()
@@ -447,7 +447,7 @@ class database(source):
     :type dbapi: str
     :param loop:  A threadloop to run the source within.  A local instance of a
         threadloop will be created if one is not supplied.
-    :type loop: `pyAttention.util.threadloop`
+    :type loop: `pyattention.util.threadloop`
 
 
 

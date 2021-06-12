@@ -1,5 +1,5 @@
 # parser.py
-from pyAttention.exception import ParserException
+from pyattention.exception import ParserException
 
 '''
 parser module
