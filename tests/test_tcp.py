@@ -3,8 +3,8 @@ import requests
 import time
 from subprocess import Popen
 from signal import SIGINT
-from pyAttention.source import tcp
-from pyAttention import parser
+from pyattention.source import tcp
+from pyattention import parser
 
 port = 20204
 

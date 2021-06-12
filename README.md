@@ -42,11 +42,11 @@ $ pip psutil, netifaces
 To retrieve data from a RSS feed
 
 ```python
-from pyAttention.source import rss
+from pyattention.source import rss
 
 # EXAMPLE: Pull 3 day forecast of Manchester, UK from the BBC News RSS feed
 url = 'https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/2643123'
-from pyAttention.source import rss
+from pyattention.source import rss
 src = rss(url, frequency=21600)  # Query feed every 6 hours
 weather = src.get()
 ```
@@ -55,13 +55,13 @@ To retrieve data from a socketIO service
 
 ```python
 # EXAMPLE: monitor Volumio metadata from its socketIO API (see https://volumio.org)  
-from pyAttention.source import socketIO
+from pyattention.source import socketIO
 url = 'http://localhost:3000'
 src = socketIO(url)
 
 async def callback(data):
   await src.put(data)
-  
+
 src.subscribe('pushState', callback)
 src.emit('getState')  # Command needed to get Volumio to send a pushState message
 state = src.get()
@@ -79,7 +79,7 @@ cur.execute('''CREATE TABLE songs (artist text, title text, album text)''')
 cur.execute('''INSERT INTO songs VALUES ('Billie Eilish', 'bad buy', 'When We All Fall Asleep, Where Do We Go?')''')
 cur.close()
 
-from pyAttention.source import database
+from pyattention.source import database
 uri = 'sqlite+aiosqlite:///./songs.db'
 src = database(uri, 'select * from songs')
 songs = src.get()

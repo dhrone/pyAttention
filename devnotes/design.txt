@@ -1,0 +1,50 @@
+Data Handling for Sources
+
+Each source
+* Collects data from its configured target
+* Can support multiple message types
+* Each message has a name to distinguish it from other types
+* When a source receives a message it...
+  - Puts the message in a dictionary with a key that is the name of the message type
+  - Puts the dictionary into the source's data queue
+
+Each collection
+* Holds a set of sources
+
+
+pyAttention provides just what the source provides
+
+Different music sources provide
+ * different metadata
+ * data elements that are not in consistent form
+
+Some derived elements may or may not be provided
+ * Time
+ * Counts of list values (e.g. playlists)
+ * scalar conversions (upper, lower)
+
+Requirements
+
+datasets should validate data elements on every database update
+  * Validate type of each element
+  * Validate correctness of each element (optional)
+  * Provide default value for element (optional)
+    - if it fails Validation
+    - if update does not contain element
+  * Provide sample elements for 'Demo mode' (optional)
+datasets can either overwrite or merge into a database
+  * Overwrite when each update represents a total database
+  * Merge when each update changes only some of the databases elements
+datasets should be able to produce calculated values
+  * Revise incoming element prior to storage
+  * Calculate new data element from arriving value
+    - Calculate based upon any existing dataset and element
+    - calculations can be applied at the database or the element level
+      + For database level updates
+        i.  Need to update pre and post processing element level calculations
+        ii. Post processing
+          a. can perform additional content modifications of update
+          b. can suppress update to current database
+    - Store into any existing (or new) dataset and element
+      + Must be careful about updating other datasets that are in 'overwrite'
+        mode as the stored values will be lost on next update

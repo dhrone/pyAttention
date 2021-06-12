@@ -3,7 +3,7 @@ import requests
 import time
 from subprocess import Popen
 from signal import SIGINT
-from pyAttention.source import socketIO
+from pyattention.source import socketIO
 
 @pytest.fixture()
 def makeServer():

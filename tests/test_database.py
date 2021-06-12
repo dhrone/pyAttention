@@ -1,4 +1,4 @@
-from pyAttention.source import database
+from pyattention.source import database
 
 def test_db():
     src = database('sqlite+aiosqlite:///tests/reference/test.db')

@@ -3,7 +3,7 @@ import requests
 import time
 from subprocess import Popen
 from signal import SIGINT
-from pyAttention.source import rss
+from pyattention.source import rss
 
 port = 20203
 

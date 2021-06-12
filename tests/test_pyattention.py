@@ -1,4 +1,4 @@
-from pyAttention import __version__
+from pyattention import __version__
 
 
 def test_version():
