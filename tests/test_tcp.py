@@ -42,3 +42,15 @@ def test_tcp(makeServer):
     assert type(retv) is dict, f'retv should be a dict: {retv}'
     assert 'Content-Length' in retv, f'Content-Length key not found: {retv}'
     assert retv['Content-Length'] == '1655', f"Content length was an unexpected value.  Expected '1655' but got {retv['Content-Length']}"
+
+    src.poll(handler=callback, repeat=1)
+    time.sleep(0.01)
+    src.clear()
+    retv = src.get()
+    assert retv is None, f"After clear get should return None: {retv}"
+
+    src.shutdown()
+    try:
+        src.checkAlive()
+    except Exception as ex:
+        assert ex.__class__.__name__ == 'RuntimeError', "After shutdown, shouldn't be alive"

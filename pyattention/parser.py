@@ -26,7 +26,7 @@ def kvp(msg, separator=':'):
             return None
         return d
     except Exception as ex:
-        raise ParserException(f'listOfKvp unable to parse line {lnum}: {ex}', msg)
+        raise ParserException(f'kvp unable to parse line {lnum}: {ex}', msg)
 
 
 def listOfKvp(msg, separator=':', startingKey=None):
