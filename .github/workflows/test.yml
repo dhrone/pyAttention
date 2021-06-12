@@ -26,7 +26,7 @@ jobs:
       #----------------------------------------------
       #          install and run linters
       #----------------------------------------------
-      - run: python -m pip install black flake8 isort rstcheck
+      - run: python -m pip install black flake8 isort
       - run: |
           flake8 .
           black . --check
