@@ -30,15 +30,17 @@ class collection(source):
         await super()._shutdown()
 
     async def _register(self, name, source):
-        '''
+        """
         Register a new source with the collection
 
         :param name: The name of the source
         :param source: The source to register
-        '''
+        """
         self._last[name] = {}
 
-        self._srcTaskList[name] = asyncio.create_task(self._monitor(name, source))
+        self._srcTaskList[name] = asyncio.create_task(
+            self._monitor(name, source)
+        )
 
     def __getitem__(self, key):
         return self._last[key]
@@ -51,4 +53,6 @@ class collection(source):
 
     def register(self, name, source):
         self.checkAlive()
-        asyncio.run_coroutine_threadsafe(self._register(name, source), self._loop)
+        asyncio.run_coroutine_threadsafe(
+            self._register(name, source), self._loop
+        )

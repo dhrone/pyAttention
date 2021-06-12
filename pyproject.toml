@@ -3,6 +3,22 @@ branch = true
 source = ['pyattention']
 omit = ['setup.py', 'docs/*', '.tox/*', 'pyattention/media.py']
 
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
 [tool.poetry]
 name = "pyAttention"
 version = "0.1.0"
@@ -50,7 +66,6 @@ black = "^20.8b1"
 darglint = "^1.7.0"
 rstcheck = "^3.3.1"
 ipython = "^7.24.1"
-codecov = "^2.1.11"
 
 [tool.pytest.ini_options]
 minversion = 6.0

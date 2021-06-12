@@ -1,8 +1,9 @@
 import sys
 from aiohttp import web
+
 app = web.Application()
 
-rssText = '''<?xml version="1.0" encoding="UTF-8"?>
+rssText = """<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:georss="http://www.georss.org/georss" version="2.0">
   <channel>
     <title>BBC Weather - Observations for  Manchester, GB</title>
@@ -25,17 +26,18 @@ rssText = '''<?xml version="1.0" encoding="UTF-8"?>
       <georss:point>53.4809 -2.2374</georss:point>
     </item>
   </channel>
-</rss>'''
+</rss>"""
+
 
 async def index(request):
-    return web.Response(text=rssText, content_type='text/xml')
+    return web.Response(text=rssText, content_type="text/xml")
 
 
-app.router.add_get('/', index)
+app.router.add_get("/", index)
 
 ## We kick off our server
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print (f'{sys.argv[0]} <port>')
+        print(f"{sys.argv[0]} <port>")
         sys.exit()
     web.run_app(app, port=int(sys.argv[1]))

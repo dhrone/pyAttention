@@ -1,7 +1,8 @@
 # exception.py
 
+
 class MessageException(Exception):
-    def __init__(self, issue='', message=None):
+    def __init__(self, issue="", message=None):
         self.message = message
         super().__init__(issue)
 
