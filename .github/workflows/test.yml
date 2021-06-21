@@ -37,7 +37,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ "ubuntu-latest" ]
-        python-minor-version: [ 8 ]
+        python-minor-version: [ 7, 8 ]
     runs-on: ${{ matrix.os }}
     steps:
       #----------------------------------------------
@@ -84,7 +84,7 @@ jobs:
       #----------------------------------------------
       - name: Coverage
         uses: codecov/codecov-action@v1
-        with: 
+        with:
           files: ./coverage.xml
           name: "Upload coverage to Codecov"
           fail_ci_if_error: true

@@ -24,19 +24,19 @@ $ git clone https://github.com/dhrone/pyAttention
 
 # Install optional dependencies
 # Databases
-$ pip sqlalchemy
-$ pip aiosqlite  # For sqlite database support
-$ pip asyncpg    # For PostgreSQL
-$ pip aiomysql   # For mySQL
+$ pip install sqlalchemy
+$ pip install aiosqlite  # For sqlite database support
+$ pip install asyncpg    # For PostgreSQL
+$ pip install aiomysql   # For mySQL
 
 # RSS Feeds
-$ pip httpx, lxml, beautifulsoup4
+$ pip install httpx, lxml, beautifulsoup4
 
 # socketIO services
-$ pip python-socketio[client]=^4.6.1, aiohttp
+$ pip install python-socketio[client]=^4.6.1, aiohttp
 
 # Local system data
-$ pip psutil, netifaces
+$ pip install psutil, netifaces
 ```
 
 ## Quickstart
