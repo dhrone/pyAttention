@@ -30,13 +30,13 @@ $ pip install asyncpg    # For PostgreSQL
 $ pip install aiomysql   # For mySQL
 
 # RSS Feeds
-$ pip install httpx, lxml, beautifulsoup4
+$ pip install httpx lxml beautifulsoup4
 
 # socketIO services
-$ pip install python-socketio[client]=^4.6.1, aiohttp
+$ pip install python-socketio[client]==4.6.* aiohttp
 
 # Local system data
-$ pip install psutil, netifaces
+$ pip install psutil netifaces
 ```
 
 ## Quickstart
@@ -78,7 +78,7 @@ import sqlite3
 con = sqlite3.connect('songs.db')
 cur = con.cursor()
 cur.execute('''CREATE TABLE songs (artist text, title text, album text)''')
-cur.execute('''INSERT INTO songs VALUES ('Billie Eilish', 'bad buy', 'When We All Fall Asleep, Where Do We Go?')''')
+cur.execute('''INSERT INTO songs VALUES ('Billie Eilish', 'bad guy', 'When We All Fall Asleep, Where Do We Go?')''')
 cur.close()
 
 from pyattention.source import database
