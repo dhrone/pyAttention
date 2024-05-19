@@ -86,9 +86,9 @@ jobs:
       #----------------------------------------------
       #    Submit coverage
       #----------------------------------------------
-      - name: Coverage
-        uses: codecov/codecov-action@v1
-        with:
-          files: ./coverage.xml
-          name: "Upload coverage to Codecov"
-          fail_ci_if_error: true
+      #- name: Coverage
+      #  uses: codecov/codecov-action@v1
+      #  with:
+      #    files: ./coverage.xml
+      #    name: "Upload coverage to Codecov"
+      #    fail_ci_if_error: true
