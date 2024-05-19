@@ -40,7 +40,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ "ubuntu-latest" ]
-        python-minor-version: [ 7, 8 ]
+        python-minor-version: [ 8, 9, 10 ]
     runs-on: ${{ matrix.os }}
     steps:
       #----------------------------------------------
