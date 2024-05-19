@@ -1,7 +1,7 @@
 [tool.coverage.run]
 branch = true
-source = ['pyattention']
-omit = ['setup.py', 'docs/*', '.tox/*', 'pyattention/media.py']
+source = ['pyAttention']
+omit = ['setup.py', 'docs/*', '.tox/*', 'pyAttention/media.py']
 
 [tool.black]
 line-length = 79
