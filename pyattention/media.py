@@ -118,11 +118,11 @@ class mpd(tcp):
             msg.status = (
                 status.SUCCESS
                 if line[0 : len(good)] == good
-                else status.FAILED
-                if line[0 : len(bad)] == bad
-                else status.OVERFLOW
-                if msgSize > message.MAXSIZE
-                else None
+                else (
+                    status.FAILED
+                    if line[0 : len(bad)] == bad
+                    else status.OVERFLOW if msgSize > message.MAXSIZE else None
+                )
             )
 
             if msg.status is not None:

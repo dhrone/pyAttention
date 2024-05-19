@@ -43,18 +43,15 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.8.1,<4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-flake8 = "^3.9.0"
 pytest-cov = "^2.11.1"
-isort = "^5.8.0"
 darglint = "^1.7.0"
 rstcheck = "^3.3.1"
 ipython = "^7.24.1"
 codecov = "^2.1.11"
-black = "^21.6b0"
 python-socketio = {version = "^4.6.1", extras = ["client"]}
 psutil = "^5.8.0"
 netifaces = "^0.11.0"
@@ -67,6 +64,9 @@ coverage = "^7.5.1"
 asyncpg = "^0.23.0"
 aiomysql = "^0.0.21"
 aiohttp = "^3.9.5"
+flake8 = "^7.0.0"
+black = "^24.4.2"
+isort = "^5.13.2"
 
 [tool.pytest.ini_options]
 minversion = 6.0

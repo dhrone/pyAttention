@@ -9,6 +9,7 @@ sio.attach(app)
 #    with open('index.html') as f:
 #        return web.Response(text=f.read(), content_type='text/html')
 
+
 ## If we wanted to create a new websocket endpoint,
 ## use this decorator, passing in the name of the
 ## event we wish to listen out for
