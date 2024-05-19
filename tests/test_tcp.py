@@ -21,7 +21,6 @@ def makeServer():
 
 
 def test_tcp(makeServer):
-    print("Starting Test")
     src = tcp(host="localhost", port=port)
 
     async def callback():
@@ -34,7 +33,6 @@ def test_tcp(makeServer):
             if len(line) == 0:
                 break
             lines.append(line)
-            print ('received: ',line)
         data = parser.kvp(lines)
         await src.put(data)
 

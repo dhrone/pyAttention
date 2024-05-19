@@ -56,7 +56,7 @@ class mpd(tcp):
     def volume(self, val=None):
         if val is None:
             return
-        if type(val) != int:
+        if type(val) is not int:
             raise TypeError("Volume value must be an integer")
 
         self._command(f"volume {val}\n")
@@ -275,7 +275,7 @@ class volumio(socketIO):
     def volume(self, val=None):
         if val is None:
             return
-        if type(val) != int:
+        if type(val) is not int:
             raise TypeError("Volume value must be an integer")
 
         self.emit("volume", data=val)

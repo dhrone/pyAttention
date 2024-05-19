@@ -383,7 +383,6 @@ class tcp(source):
 
     # methods available for handlers to call
     async def write(self, data):
-        print ("[{0}] type {1}".format(data.encode(), type(data.encode())))
         self._writer.write(data.encode())
         await self._writer.drain()
 
