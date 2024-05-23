@@ -39,6 +39,8 @@ classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",    
 ]
 
 [tool.poetry.dependencies]
@@ -98,5 +100,5 @@ testpaths = [
 ]
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.8"]
 build-backend = "poetry.masonry.api"
