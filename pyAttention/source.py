@@ -30,7 +30,7 @@ class source:
         self._persistent = persistent
 
         # Initialize logging system
-        self._logger = logging.getLogger("pyattention")
+        self._logger = logging.getLogger("pyAttention")
 
         if loop is None:
             self.tloop = threadloop()
@@ -271,7 +271,7 @@ class source:
 
         :param handler: The function that will interact with the source.  See
             `handler` documentation for more details.
-        :type handler: `pyattention.handler`
+        :type handler: `pyAttention.handler`
         :param frequency: How often handler will be called in seconds.  Setting
             this to zero will cause the handler to be called continuously.  This
             should be avoided unless the handler spends some amount of time
@@ -523,7 +523,7 @@ class database(source):
     :type dbapi: str
     :param loop:  A threadloop to run the source within.  A local instance of a
         threadloop will be created if one is not supplied.
-    :type loop: `pyattention.util.threadloop`
+    :type loop: `pyAttention.util.threadloop`
 
 
 

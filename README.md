@@ -1,7 +1,7 @@
 # pyAttention
 A library to monitor information sources
 
-![build](https://github.com/dhrone/pyattention/actions/workflows/test.yml/badge.svg) [![codecov](https://codecov.io/gh/dhrone/pyAttention/branch/master/graph/badge.svg?token=ZCAT8XRG4W)](https://codecov.io/gh/dhrone/pyAttention)
+![build](https://github.com/dhrone/pyAttention/actions/workflows/test.yml/badge.svg) [![codecov](https://codecov.io/gh/dhrone/pyAttention/branch/master/graph/badge.svg?token=ZCAT8XRG4W)](https://codecov.io/gh/dhrone/pyAttention)
 
 ## Key Features
 
@@ -44,11 +44,11 @@ $ pip install psutil netifaces
 To retrieve data from a RSS feed
 
 ```python
-from pyattention.source import rss
+from pyAttention.source import rss
 
 # EXAMPLE: Pull 3 day forecast of Manchester, UK from the BBC News RSS feed
 url = 'https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/2643123'
-from pyattention.source import rss
+from pyAttention.source import rss
 src = rss(url, frequency=21600)  # Query feed every 6 hours
 weather = src.get()
 ```
@@ -57,7 +57,7 @@ To retrieve data from a socketIO service
 
 ```python
 # EXAMPLE: monitor Volumio metadata from its socketIO API (see https://volumio.org)  
-from pyattention.source import socketIO
+from pyAttention.source import socketIO
 url = 'http://localhost:3000'
 src = socketIO(url)
 
@@ -81,7 +81,7 @@ cur.execute('''CREATE TABLE songs (artist text, title text, album text)''')
 cur.execute('''INSERT INTO songs VALUES ('Billie Eilish', 'bad guy', 'When We All Fall Asleep, Where Do We Go?')''')
 cur.close()
 
-from pyattention.source import database
+from pyAttention.source import database
 uri = 'sqlite+aiosqlite:///./songs.db'
 src = database(uri, 'select * from songs')
 songs = src.get()
