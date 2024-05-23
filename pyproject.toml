@@ -21,7 +21,7 @@ exclude = '''
 
 [tool.poetry]
 name = "pyAttention"
-version = "0.1.1"
+version = "0.1.2"
 description = "A library to monitor information sources"
 authors = ["dhrone <dhrone@dhrone.xyz>"]
 license = "MIT"
